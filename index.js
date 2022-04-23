@@ -7,6 +7,8 @@ const modules = require("./models/models");
 const cors = require("cors");
 // -- Имопрт основного роутера
 const router = require("./routes/index");
+const fileUpload = require("express-fileupload");
+const path = require("path");
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 const PORT = process.env.PORT || 7000;
 
@@ -15,6 +17,8 @@ const app = express();
 app.use(cors());
 // -- Чтобы наше приложение могло парсить данные JSON
 app.use(express.json());
+app.use(fileUpload({}));
+app.use(express.static(path.resolve(__dirname, "static")));
 // -- Первый параметр - URL, по которому роутер должен обрабатываться. Второй параметр - сам роутер
 app.use("/api", router);
 // -- Middleware, который работает с ошибками обязательно должен идти и регистрироваться в самом конце

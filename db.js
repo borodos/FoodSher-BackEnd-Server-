@@ -1,5 +1,4 @@
 // -- Разработка БД
-// lkpmk
 const { Sequelize } = require("sequelize");
 
 module.exports = new Sequelize(

@@ -5,7 +5,7 @@ class BrandController {
 	async create(req, res) {
 		const { name } = req.body;
 		const brand = await Brand.create({ name });
-		return res.json(brand);
+		return res.json(name);
 	}
 
 	async getAll(req, res) {
