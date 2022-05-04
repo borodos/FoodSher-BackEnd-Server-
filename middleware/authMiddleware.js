@@ -7,7 +7,7 @@ module.exports = function (req, res, next) {
 	}
 	try {
 		// -- Берем токен из headers
-		// -- В headers обычно помещает тип токена и сам токен
+		// -- В headers обычно помещается тип токена и сам токен
 		const token = req.headers.authorization.split(" ")[1]; // -- Результат: Тип токена - Bearer[0], токен - agsjasdjk[1]
 		// -- Ошибка, если токена нет
 		if (!token) {

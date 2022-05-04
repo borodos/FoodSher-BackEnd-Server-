@@ -14,7 +14,7 @@ const generateJwt = (id, email, role) => {
 class UserController {
 	async registration(req, res, next) {
 		// -- Из запроса получаем email и пароль
-		const { email, password, role } = req.body;
+		const { email, password, role, first_name, second_name } = req.body;
 
 		// -- Ошибка, если пароль и почта не указаны
 		if (!email || !password) {
@@ -32,10 +32,16 @@ class UserController {
 		const hashPassword = await bcrypt.hash(password, 5); // -- Первый параметр - сам пароль, второй параметр - сколько раз будем хэшировать пароль
 
 		// -- Создание пользователя
-		const user = await User.create({ email, role, password: hashPassword });
+		const user = await User.create({
+			email,
+			role,
+			password: hashPassword,
+			first_name,
+			second_name,
+		});
 
 		// -- Создание для пользователя корзины
-		const basket = await Basket.create({ userId: user.id });
+		await Basket.create({ userId: user.id });
 
 		//! -- Генерация JWT Token
 		// -- Первый параметр - объект PAYLOAD (центральная часть JWT Token, в которой будут сшиваться данные)
@@ -44,6 +50,26 @@ class UserController {
 		const token = generateJwt(user.id, user.email, user.role);
 		// -- Возращаем токен
 		return res.json({ token });
+	}
+
+	async basketUser(req, res, next) {
+		// const { id } = req.body;
+		// console.log(req.body);\
+		try {
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token) {
+				return res.status(401).json({ message: "Нет токена" });
+			}
+
+			const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+			req.user = decoded;
+		} catch (error) {
+			return next(ApiError.internal("Не удалось отправить basket"));
+		}
+
+		const basket = await Basket.findOne({ where: { userId: req.user.id } });
+		return res.json(basket.id);
 	}
 
 	async login(req, res, next) {
@@ -55,10 +81,11 @@ class UserController {
 			return next(ApiError.internal("Пользователь не найден"));
 		}
 
-		// -- Проверка, совпадает ли пароль введенный пользователем с паролем в БД
+		// -- Проверка, совпадает ли пароль, введенный пользователем, с паролем в БД
 		let comparePassword = bcrypt.compareSync(password, user.password);
-		// -- Ошибка, если пароли не найден
-		if (!user) {
+
+		// -- Ошибка, если пароль не найден
+		if (!comparePassword) {
 			return next(ApiError.internal("Не верный пароль"));
 		}
 
