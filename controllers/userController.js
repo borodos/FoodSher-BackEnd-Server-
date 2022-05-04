@@ -57,6 +57,7 @@ class UserController {
 
 		// -- Проверка, совпадает ли пароль введенный пользователем с паролем в БД
 		let comparePassword = bcrypt.compareSync(password, user.password);
+
 		// -- Ошибка, если пароли не найден
 		if (!user) {
 			return next(ApiError.internal("Не верный пароль"));
