@@ -31,7 +31,8 @@ class DeviceController {
 
 			return res.json(device);
 		} catch (error) {
-			next(ApiError.badRequest(error.message));
+			console.log(req.files);
+			return next(ApiError.badRequest(error.message));
 		}
 	}
 

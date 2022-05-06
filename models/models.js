@@ -11,6 +11,13 @@ const User = sequelize.define("user", {
 	role: { type: DataTypes.STRING, defaultValue: "USER" },
 });
 
+const UserInfo = sequelize.define("user_info", {
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+	firstName: { type: DataTypes.STRING, allowNull: false },
+	secondName: { type: DataTypes.STRING, allowNull: false },
+	img: { type: DataTypes.STRING },
+});
+
 // -- Модель корзины
 const Basket = sequelize.define("basket", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -62,6 +69,9 @@ const TypeBrand = sequelize.define("type_brand", {
 User.hasOne(Basket);
 Basket.belongsTo(User);
 
+User.hasMany(UserInfo, { as: "info" });
+UserInfo.belongsTo(User);
+
 User.hasMany(Rating);
 Rating.belongsTo(User);
 
@@ -93,4 +103,5 @@ module.exports = {
 	Rating,
 	TypeBrand,
 	DeviceInfo,
+	UserInfo,
 };
