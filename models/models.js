@@ -23,6 +23,16 @@ const Basket = sequelize.define("basket", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
+// -- Модель объявления
+const Announ = sequelize.define("announ", {
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+	title: { type: DataTypes.STRING, allowNull: false },
+	description: { type: DataTypes.STRING, allowNull: false },
+	phone: { type: DataTypes.STRING, allowNull: false },
+	nameObject: { type: DataTypes.STRING, allowNull: false },
+	img: { type: DataTypes.STRING, allowNull: false },
+});
+
 const BasketDevice = sequelize.define("basket_device", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
@@ -75,6 +85,9 @@ UserInfo.belongsTo(User);
 User.hasMany(Rating);
 Rating.belongsTo(User);
 
+User.hasMany(Announ);
+Announ.belongsTo(User);
+
 Basket.hasMany(BasketDevice);
 BasketDevice.belongsTo(Basket);
 
@@ -95,6 +108,7 @@ Brand.belongsToMany(Type, { through: TypeBrand });
 
 module.exports = {
 	User,
+	Announ,
 	Basket,
 	BasketDevice,
 	Device,
