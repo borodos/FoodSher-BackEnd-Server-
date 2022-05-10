@@ -37,6 +37,10 @@ const BasketDevice = sequelize.define("basket_device", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
+const BasketAnnoun = sequelize.define("basket_announ", {
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+});
+
 // -- Модель девайса
 const Device = sequelize.define("device", {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -79,7 +83,7 @@ const TypeBrand = sequelize.define("type_brand", {
 User.hasOne(Basket);
 Basket.belongsTo(User);
 
-User.hasMany(UserInfo, { as: "info" });
+User.hasMany(UserInfo);
 UserInfo.belongsTo(User);
 
 User.hasMany(Rating);
@@ -87,6 +91,12 @@ Rating.belongsTo(User);
 
 User.hasMany(Announ);
 Announ.belongsTo(User);
+
+Basket.hasMany(BasketAnnoun);
+BasketAnnoun.belongsTo(Basket);
+
+Announ.hasOne(BasketAnnoun);
+BasketAnnoun.belongsTo(Announ);
 
 Basket.hasMany(BasketDevice);
 BasketDevice.belongsTo(Basket);
@@ -110,7 +120,7 @@ module.exports = {
 	User,
 	Announ,
 	Basket,
-	BasketDevice,
+	BasketAnnoun,
 	Device,
 	Type,
 	Brand,

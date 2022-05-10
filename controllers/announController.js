@@ -41,9 +41,51 @@ class AnnounController {
 		return res.json(announs);
 	}
 
+	async getAllForUser(req, res) {
+		try {
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token) {
+				return res.status(401).json({ message: "Нет токена" });
+			}
+
+			const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+			req.user = decoded;
+		} catch (error) {
+			return next(
+				ApiError.internal("Не удалось отправить информацию о пользователе")
+			);
+		}
+
+		const announs = await Announ.findAll({ where: { userId: req.user.id } });
+		return res.json(announs);
+	}
+
 	async getOne(req, res) {
 		const { id } = req.params;
 		const announs = await Announ.findOne({ where: { id } });
+		return res.json(announs);
+	}
+
+	async delete(req, res) {
+		try {
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token) {
+				return res.status(401).json({ message: "Нет токена" });
+			}
+
+			const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+			req.user = decoded;
+		} catch (error) {
+			return next(
+				ApiError.internal("Не удалось отправить информацию о пользователе")
+			);
+		}
+
+		const announs = await Announ.destroy({
+			where: { userId: req.user.id, id: req.body.id },
+		});
 		return res.json(announs);
 	}
 }
