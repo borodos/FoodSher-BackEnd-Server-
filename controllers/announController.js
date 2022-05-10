@@ -2,9 +2,24 @@ const { Announ } = require("../models/models");
 const ApiError = require("../error/ApiError");
 const uuid = require("uuid");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 class AnnounController {
 	async create(req, res) {
+		try {
+			const token = req.headers.authorization.split(" ")[1];
+			if (!token) {
+				return res.status(401).json({ message: "Нет токена" });
+			}
+
+			const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+			req.user = decoded;
+		} catch (error) {
+			return next(
+				ApiError.internal("Не удалось отправить информацию о пользователе")
+			);
+		}
 		const { title, description, phone, nameObject } = req.body;
 		const { img } = req.files;
 		let fileName = uuid.v4() + ".jpg";
@@ -16,6 +31,7 @@ class AnnounController {
 			phone,
 			nameObject,
 			img: fileName,
+			userId: req.user.id,
 		});
 		return res.json(announ);
 	}
