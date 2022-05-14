@@ -1,7 +1,8 @@
 const ApiError = require("../error/ApiError");
 const bcrypt = require("bcrypt");
-const { User, Basket, UserInfo, BasketAnnoun } = require("../models/models");
+const { Basket, BasketAnnoun, Message, Announ } = require("../models/models");
 const jwt = require("jsonwebtoken");
+
 class BasketController {
 	async addToBasket(req, res, next) {
 		try {
@@ -16,6 +17,7 @@ class BasketController {
 		} catch (error) {
 			return next(ApiError.internal("Авторизуйтесь"));
 		}
+
 		const basket = await Basket.findOne({ where: { userId: req.user.id } });
 
 		const existingBasketAnnoun = await BasketAnnoun.findOne({
@@ -29,6 +31,11 @@ class BasketController {
 		const basketAnnoun = await BasketAnnoun.create({
 			basketId: basket.id,
 			announId: req.body.id,
+		});
+
+		await Message.create({
+			senderId: req.user.id,
+			receiverId: req.body.userId,
 		});
 		return res.json(basketAnnoun);
 	}
@@ -44,7 +51,9 @@ class BasketController {
 
 			req.user = decoded;
 		} catch (error) {
-			return next(ApiError.internal("Не удалось отправить basket"));
+			return next(
+				ApiError.internal("Не удалось получить инофрмацию о пользователе")
+			);
 		}
 
 		const basket = await Basket.findOne({ where: { userId: req.user.id } });
@@ -65,7 +74,9 @@ class BasketController {
 
 			req.user = decoded;
 		} catch (error) {
-			return next(ApiError.internal("Не удалось отправить basket"));
+			return next(
+				ApiError.internal("Не удалось получить инофрмацию о пользователе")
+			);
 		}
 
 		const basket = await Basket.findOne({ where: { userId: req.user.id } });
@@ -86,7 +97,9 @@ class BasketController {
 
 			req.user = decoded;
 		} catch (error) {
-			return next(ApiError.internal("Не удалось отправить basket"));
+			return next(
+				ApiError.internal("Не удалось получить инофрмацию о пользователе")
+			);
 		}
 
 		const basket = await Basket.findOne({ where: { userId: req.user.id } });
@@ -96,6 +109,16 @@ class BasketController {
 		await basketAnnoun.destroy();
 		await basketAnnoun.save();
 		return res.json(basketAnnoun);
+	}
+
+	async getOrderInfo(req, res, next) {
+		const announ = await Announ.findOne({
+			where: {
+				id: req.body.announId,
+			},
+		});
+
+		return res.json(announ);
 	}
 }
 

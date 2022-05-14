@@ -20,7 +20,7 @@ class AnnounController {
 				ApiError.internal("Не удалось отправить информацию о пользователе")
 			);
 		}
-		const { title, description, phone, nameObject } = req.body;
+		const { title, description, person, phone, nameObject } = req.body;
 		const { img } = req.files;
 		let fileName = uuid.v4() + ".jpg";
 		img.mv(path.resolve(__dirname, "..", "static", fileName));
@@ -28,6 +28,7 @@ class AnnounController {
 		const announ = await Announ.create({
 			title,
 			description,
+			person,
 			phone,
 			nameObject,
 			img: fileName,
